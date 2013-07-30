@@ -2,10 +2,11 @@
 
 Given /the following movies exist/ do |movies_table|
   movies_table.hashes.each do |movie|
-    # each returned element will be a hash whose key is the table header.
-    # you should arrange to add that movie to the database here.
+    if !Movie.find_by_title_and_rating(movie[:title], movie[:rating]) then
+      Movie.create!(movie)
+    end
   end
-  flunk "Unimplemented"
+  assert (Movie.count >= movies_table.hashes.count), "Error inizializing DB" 
 end
 
 # Make sure that one string (regexp) occurs before or after another one
