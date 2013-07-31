@@ -34,9 +34,15 @@ end
 
 Then /^I should (not )?see movies rated: (.*)/ do |negation, rating_list|
   ratings = rating_list.split(",")
-  ratings = Movie.all_ratings - ratings if negation
-  db_size = filtered_movies = Movie.find(:all, :conditions => {:rating => ratings}).size
-  page.find(:xpath, "//table[@id=\"movies\"]/tbody[count(tr) = #{db_size}]")
+  exist = [] 
+  find("#movies").all('tr').map { |row| row.all('td[2]').map{ |cell| exist << cell.text}}
+  require 'set'
+  if negation
+    ratings.to_set.intersection(exist.to_set).should be_empty
+  else
+    ratings.to_set.should == exist.to_set
+  end
+
 end
 
 Then /I should see (none|all) of the movies/ do |filter|
